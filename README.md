@@ -85,7 +85,7 @@ The install screen asks for two optional settings:
 claude plugin test .
 ```
 
-There are 12 tests. They cover the rules plus the whole mod running in Claude Code's test engine, with a fake git and a fake `.env`. Each guard was broken on purpose once to confirm that its test fails for the right reason.
+There are 13 tests. They cover the rules plus the whole mod running in Claude Code's test engine, with a fake git and a fake `.env`. Each guard was broken on purpose once to confirm that its test fails for the right reason.
 
 ## About
 
