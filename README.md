@@ -43,6 +43,29 @@ The install screen asks for two optional settings:
 - A file counts as "written by this session" when it was changed through Claude's Write or Edit tools. Every other uncommitted change is treated as someone else's. If this session changed a file through a shell command instead, you get a question rather than a silent loss.
 - If the guard itself fails while checking a shell command, the command does not run.
 
+## What it reads, runs, and sends
+
+- **Sends nothing.** The mod makes no network requests and does not upload, log, or store anything. It has no telemetry.
+- **Reads:**
+  - `.env*` files in the repository root, plus any files you list under "Extra .env files". It reads them only to learn the secret values to watch for. The values stay in memory and are compared against what tools are about to run or return.
+  - Each tool call's input and output (shell commands, file writes, and other tool arguments). It looks for those secret values there and masks them in output.
+- **Runs:** only `git`, through its own read-only queries:
+  - `git rev-parse --show-toplevel` to find the repository root
+  - `git rev-parse --abbrev-ref --symbolic-full-name @{u}` to find the upstream branch
+  - `git status --porcelain=v1 -z --untracked-files=all` to list uncommitted files
+  - `git log <upstream>..HEAD`, plus `git diff` (with `--shortstat`, `--ignore-cr-at-eol --shortstat` and `--name-only` against the upstream) for `/preflight`
+
+  None of these change your repository.
+- **Changes:**
+  - It refuses tool calls, using the rules above.
+  - It asks you before destructive git commands.
+  - It replaces secret values in tool output with `[shared-repo-guard: secret hidden]`.
+- **Hooks:**
+  - `tool.call` on Bash, PowerShell, Read, Write, Edit and every other tool, for the checks above
+  - `session.start` and `turn.complete` to refresh the list of uncommitted files
+  - `ui.render` for the one-line notice above the prompt
+  - `command.run` for `/guard` and `/preflight`
+
 ## Limits
 
 - It only sees what passes through Claude Code. Other agents and your own terminal are not covered.

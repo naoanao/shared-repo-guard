@@ -4,6 +4,8 @@
   "description": "For repos where several AI agents (or you and an agent) work in the same folder: stops secret values from leaving your .env, pushes to public remotes, and git commands that would wipe work this session did not write.",
   "author": { "name": "naoanao" },
   "license": "MIT",
+  "homepage": "https://github.com/naoanao/shared-repo-guard",
+  "repository": "https://github.com/naoanao/shared-repo-guard",
   "keywords": ["safety", "secrets", "git", "multi-agent", "guardrails"],
   "userConfig": {
     "publicRemotes": {
