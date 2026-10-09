@@ -10,6 +10,22 @@ function unquoteWords(s) {
   return String(s || '').replace(/(["'])([^"'\s]+)\1/g, '$2')
 }
 
+// Drop commit messages, which are text and never run: the -m "..." of git commit, and the body of a
+// here-document given to git commit or written to a file. A here-document that is run (bash <<EOF) stays,
+// and so does any message holding $(...) or backticks, because the shell runs those.
+function withoutMessages(cmd) {
+  let s = String(cmd || '')
+  s = s.replace(/<<-?\s*(['"]?)(\w+)\1([^\n]*)\n([\s\S]*?)\n[ \t]*\2[ \t]*(?=\n|$)/g, (all, q, tag, rest, body, offset) => {
+    if (/\$\(|`/.test(body)) return all
+    const opener = s.slice(s.lastIndexOf('\n', offset) + 1, offset) + rest
+    return /\bgit\s+commit\b/.test(opener) || />/.test(opener) ? '<<' + tag + rest + '\n' + tag : all
+  })
+  if (/\bgit\s+commit\b/.test(s)) {
+    s = s.replace(/(\s(?:-m|--message)(?:=|\s+))("(?:[^"\\]|\\.)*"|'[^']*')/g, (all, flag, msg) => (/\$\(|`/.test(msg) ? all : flag + '""'))
+  }
+  return s
+}
+
 // Comma or whitespace separated list from a userConfig string.
 export function parseList(value) {
   return String(value || '')
@@ -20,7 +36,7 @@ export function parseList(value) {
 
 // git push to a remote the user marked public, or push --all / --mirror.
 export function pushToPublic(cmd, publicRemotes) {
-  for (const raw of splitCommands(cmd)) {
+  for (const raw of splitCommands(withoutMessages(cmd))) {
     // The shell drops quotes, so "public" and 'public' push to the same remote as public.
     // Only single quoted words are unwrapped, so a message like -m "push to public" stays a message.
     const part = unquoteWords(raw)
@@ -38,7 +54,7 @@ export function pushToPublic(cmd, publicRemotes) {
 
 // git add -A / --all / . / ./ / :/ / * (stages everything, including other agents' work)
 export function addAll(cmd) {
-  for (const part of splitCommands(cmd)) {
+  for (const part of splitCommands(withoutMessages(cmd))) {
     const m = part.match(/\bgit\s+add\b(.*)$/)
     if (!m) continue
     const args = ' ' + unquoteWords(m[1]) + ' '
@@ -49,7 +65,7 @@ export function addAll(cmd) {
 
 // git commands that throw away uncommitted work with no way back.
 export function destructiveGit(cmd) {
-  for (const part of splitCommands(cmd)) {
+  for (const part of splitCommands(withoutMessages(cmd))) {
     if (!/\bgit\b/.test(part)) continue
     if (/\bgit\s+reset\b.*\s--hard\b/.test(part)) return 'git reset --hard'
     if (/\bgit\s+checkout\b.*\s--(\s|$)/.test(part)) return 'git checkout -- <file>'

@@ -44,6 +44,21 @@ test('commands that discard uncommitted work are recognised', async () => {
   expect(destructiveGit('git checkout main')).toBe(null)
 })
 
+test('words inside a commit message do not trigger, commands that run still do', async () => {
+  const pub = parseList('public')
+  const heredoc = "git commit -q -F - <<'EOF'\nfix: spellings of git add -A\n\n- avoid git reset --hard\n- never git push public\nEOF"
+  expect(addAll(heredoc)).toBe(null)
+  expect(destructiveGit(heredoc)).toBe(null)
+  expect(pushToPublic(heredoc, pub)).toBe(null)
+  expect(destructiveGit('git commit -m "avoid git reset --hard"')).toBe(null)
+  expect(addAll('cat > msg.txt <<EOF\nuse git add -A\nEOF')).toBe(null)
+  expect(addAll(heredoc + '\ngit add -A')).toBeTruthy()
+  expect(addAll('git commit -m "x" && git add -A')).toBeTruthy()
+  expect(addAll('bash <<EOF\ngit add -A\nEOF')).toBeTruthy()
+  expect(pushToPublic('git commit -m "$(git push public main)"', pub)).toBeTruthy()
+  expect(destructiveGit('git commit -F - <<EOF\n$(git reset --hard)\nEOF')).toBeTruthy()
+})
+
 test('printing or reading .env is stopped, the example file passes', async () => {
   expect(printsEnvFile('cat apps/web/.env.local')).toBeTruthy()
   expect(printsEnvFile('Get-Content .env')).toBeTruthy()

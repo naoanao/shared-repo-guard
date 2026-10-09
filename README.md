@@ -41,6 +41,7 @@ The install screen asks for two optional settings:
 
 - Secret values are read from your `.env` files when the session starts. They are kept in memory only and never written, logged, or shown. A key counts as a secret when its name contains SECRET, KEY, TOKEN, PASSWORD, PRIVATE, CREDENTIAL, WEBHOOK, SIGNING, AUTH, DSN or DATABASE_URL and its value is at least 12 characters long. Public build variables (`NEXT_PUBLIC_`, `VITE_`, `PUBLIC_`, `EXPO_PUBLIC_`, `REACT_APP_`) are skipped.
 - A file counts as "written by this session" when it was changed through Claude's Write or Edit tools. Every other uncommitted change is treated as someone else's. If this session changed a file through a shell command instead, you get a question rather than a silent loss.
+- Commit messages are text, not commands, so words in them do not trigger a rule: the `-m "..."` of `git commit`, and a here-document given to `git commit` or written to a file. A message holding `$(...)` or backticks is still checked, because the shell runs those.
 - If the guard itself fails while checking a shell command, the command does not run.
 
 ## What it reads, runs, and sends
@@ -103,7 +104,7 @@ MIT License.
 止めるものは次のとおりです。
 
 - **鍵の値**：`.env` にある鍵の値が、コマンド・ファイル・ほかの道具に入ろうとしたら止めます。コマンドの出力に鍵の値が出たときは、伏せ字にしてから AI に渡します。
-- **別の AI の作業**：このセッションが書いていない保存前の変更があるとき、`git reset --hard` などの消すコマンドは、実行する前にあなたに確かめます。答える人がいなければ止めます。`git add -A`（`.`・`./`・`:/`・`*` と書いた場合も）も同じ状況では止めます。
+- **別の AI の作業**：このセッションが書いていない保存前の変更があるとき、`git reset --hard` などの消すコマンドは、実行する前にあなたに確かめます。答える人がいなければ止めます。`git add -A`（`.`・`./`・`:/`・`*` と書いた場合も）も同じ状況では止めます。保存のメモの中の文字では止めません（`$(…)` を含むメモは確かめます）。
 - **公開の送り先**：公開と指定した送り先への送信を止めます。
 - **`.env` の表示**：`.env` の中身を画面に出すことを止めます。
 
