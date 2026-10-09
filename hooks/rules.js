@@ -10,6 +10,11 @@ function unquoteWords(s) {
   return String(s || '').replace(/(["'])([^"'\s]+)\1/g, '$2')
 }
 
+// git -C <dir> add … / git -c key=value reset … / git --no-pager stash …: drop the options between git and its command.
+function withoutGitOptions(s) {
+  return String(s || '').replace(/\bgit((?:\s+(?:-C|-c|--git-dir|--work-tree|--namespace|--exec-path|--config-env)(?:=|\s+)\S+|\s+-[A-Za-z-][\w-]*(?:=\S+)?)*)(?=\s)/g, 'git')
+}
+
 // Drop commit messages, which are text and never run: the -m "..." of git commit, and the body of a
 // here-document given to git commit or written to a file. A here-document that is run (bash <<EOF) stays,
 // and so does any message holding $(...) or backticks, because the shell runs those.
@@ -54,7 +59,8 @@ export function pushToPublic(cmd, publicRemotes) {
 
 // git add -A / --all / . / ./ / :/ / * (stages everything, including other agents' work)
 export function addAll(cmd) {
-  for (const part of splitCommands(withoutMessages(cmd))) {
+  for (const raw of splitCommands(withoutMessages(cmd))) {
+    const part = withoutGitOptions(raw)
     const m = part.match(/\bgit\s+add\b(.*)$/)
     if (!m) continue
     const args = ' ' + unquoteWords(m[1]) + ' '
@@ -65,7 +71,8 @@ export function addAll(cmd) {
 
 // git commands that throw away uncommitted work with no way back.
 export function destructiveGit(cmd) {
-  for (const part of splitCommands(withoutMessages(cmd))) {
+  for (const raw of splitCommands(withoutMessages(cmd))) {
+    const part = withoutGitOptions(raw)
     if (!/\bgit\b/.test(part)) continue
     if (/\bgit\s+reset\b.*\s--hard\b/.test(part)) return 'git reset --hard'
     if (/\bgit\s+checkout\b.*\s--(\s|$)/.test(part)) return 'git checkout -- <file>'

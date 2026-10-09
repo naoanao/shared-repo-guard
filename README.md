@@ -41,6 +41,7 @@ The install screen asks for two optional settings:
 
 - Secret values are read from your `.env` files when the session starts. They are kept in memory only and never written, logged, or shown. A key counts as a secret when its name contains SECRET, KEY, TOKEN, PASSWORD, PRIVATE, CREDENTIAL, WEBHOOK, SIGNING, AUTH, DSN or DATABASE_URL and its value is at least 12 characters long. Public build variables (`NEXT_PUBLIC_`, `VITE_`, `PUBLIC_`, `EXPO_PUBLIC_`, `REACT_APP_`) are skipped.
 - A file counts as "written by this session" when it was changed through Claude's Write or Edit tools. Every other uncommitted change is treated as someone else's. If this session changed a file through a shell command instead, you get a question rather than a silent loss.
+- Options between `git` and its command (`git -C <dir>`, `-c key=value`, `--no-pager` and the like) are looked through, so `git -C other-repo add -A` is caught too.
 - Commit messages are text, not commands, so words in them do not trigger a rule: the `-m "..."` of `git commit`, and a here-document given to `git commit` or written to a file. A message holding `$(...)` or backticks is still checked, because the shell runs those.
 - If the guard itself fails while checking a shell command, the command does not run.
 
@@ -85,7 +86,7 @@ The install screen asks for two optional settings:
 claude plugin test .
 ```
 
-There are 13 tests. They cover the rules plus the whole mod running in Claude Code's test engine, with a fake git and a fake `.env`. Each guard was broken on purpose once to confirm that its test fails for the right reason.
+There are 14 tests. They cover the rules plus the whole mod running in Claude Code's test engine, with a fake git and a fake `.env`. Each guard was broken on purpose once to confirm that its test fails for the right reason.
 
 ## About
 
