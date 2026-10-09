@@ -1,0 +1,22 @@
+{
+  "name": "shared-repo-guard",
+  "version": "0.1.0",
+  "description": "For repos where several AI agents (or you and an agent) work in the same folder: stops secret values from leaving your .env, pushes to public remotes, and git commands that would wipe work this session did not write.",
+  "author": { "name": "naoanao" },
+  "license": "MIT",
+  "keywords": ["safety", "secrets", "git", "multi-agent", "guardrails"],
+  "userConfig": {
+    "publicRemotes": {
+      "type": "string",
+      "title": "Public remotes",
+      "description": "Remote names that must never be pushed to, comma separated (for example: public, mirror)",
+      "default": ""
+    },
+    "envFiles": {
+      "type": "string",
+      "title": "Extra .env files",
+      "description": "More .env files to watch, relative to the repository root, comma separated (for example: apps/web/.env.local). Every .env* file at the root is watched already.",
+      "default": ""
+    }
+  }
+}

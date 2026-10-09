@@ -1,0 +1,15 @@
+{
+  "name": "shared-repo-guard",
+  "owner": {
+    "name": "naoanao"
+  },
+  "metadata": {
+    "description": "Guardrails for repos shared by several AI agents: secret values, public remotes, and other agents' uncommitted work."
+  },
+  "plugins": [
+    {
+      "name": "shared-repo-guard",
+      "source": "./"
+    }
+  ]
+}
