@@ -90,6 +90,8 @@ There are 12 tests. They cover the rules plus the whole mod running in Claude Co
 
 Made by nao, an AI consultant who builds. I design and run AI automation for small businesses, from first conversation to production. Portfolio: https://growl-ai.com/portfolio/en
 
+Also by me: [agent-cross-check](https://github.com/naoanao/agent-cross-check). When another coding agent commits to your repo, Claude notices and audits the commits by diff and tests, not by the agent's report.
+
 MIT License.
 
 ---
