@@ -5,6 +5,11 @@ function splitCommands(cmd) {
   return String(cmd || '').split(/;|&&|\|\||\n/)
 }
 
+// "word" and 'word' become word; quoted text with spaces is left as it is.
+function unquoteWords(s) {
+  return String(s || '').replace(/(["'])([^"'\s]+)\1/g, '$2')
+}
+
 // Comma or whitespace separated list from a userConfig string.
 export function parseList(value) {
   return String(value || '')
@@ -15,7 +20,10 @@ export function parseList(value) {
 
 // git push to a remote the user marked public, or push --all / --mirror.
 export function pushToPublic(cmd, publicRemotes) {
-  for (const part of splitCommands(cmd)) {
+  for (const raw of splitCommands(cmd)) {
+    // The shell drops quotes, so "public" and 'public' push to the same remote as public.
+    // Only single quoted words are unwrapped, so a message like -m "push to public" stays a message.
+    const part = unquoteWords(raw)
     if (!/\bgit\b/.test(part) || !/\bpush\b/.test(part)) continue
     for (const r of publicRemotes || []) {
       const esc = r.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -28,13 +36,13 @@ export function pushToPublic(cmd, publicRemotes) {
   return null
 }
 
-// git add -A / --all / . (stages everything, including other agents' work)
+// git add -A / --all / . / ./ / :/ / * (stages everything, including other agents' work)
 export function addAll(cmd) {
   for (const part of splitCommands(cmd)) {
     const m = part.match(/\bgit\s+add\b(.*)$/)
     if (!m) continue
-    const args = ' ' + m[1] + ' '
-    if (/\s(-A|--all|\.|-[a-zA-Z]*A[a-zA-Z]*)\s/.test(args)) return 'git add -A'
+    const args = ' ' + unquoteWords(m[1]) + ' '
+    if (/\s(-A|--all|\.\/?|:\/|\*|-[a-zA-Z]*A[a-zA-Z]*)\s/.test(args)) return 'git add -A'
   }
   return null
 }

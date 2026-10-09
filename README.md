@@ -16,7 +16,7 @@ Popular guard collections already block reading `.env` and force-pushing to `mai
 | | What happens | Why |
 |---|---|---|
 | **Secret values** | Any shell command, file write, or tool call (browser, MCP and others) that contains the actual value of a secret from your `.env` is refused. If a value turns up in a command's output, it is masked before the model sees it. | Blocking the `.env` file isn't enough once the value has been copied somewhere else. |
-| **Other agents' work** | `git reset --hard`, `checkout .`, `restore`, `stash` and `clean -f` ask you first when the tree holds uncommitted files that this session did not write. They are refused when nobody is there to answer. `git add -A` is refused in the same situation. | Another agent's half-finished work looks like junk to the agent that didn't write it. |
+| **Other agents' work** | `git reset --hard`, `checkout .`, `restore`, `stash` and `clean -f` ask you first when the tree holds uncommitted files that this session did not write. They are refused when nobody is there to answer. `git add -A` (and the same thing written as `.`, `./`, `:/` or `*`) is refused in the same situation. | Another agent's half-finished work looks like junk to the agent that didn't write it. |
 | **Public remotes** | Pushes to remotes you mark as public are refused, and so are `push --all` and `--mirror`. | A repo with a private `origin` and a public mirror is one typo away from publishing everything. |
 | **Printing `.env`** | `cat .env` and similar commands are refused, and so is opening `.env` with the Read tool. `.env.example` is allowed. | |
 
@@ -103,7 +103,7 @@ MIT License.
 止めるものは次のとおりです。
 
 - **鍵の値**：`.env` にある鍵の値が、コマンド・ファイル・ほかの道具に入ろうとしたら止めます。コマンドの出力に鍵の値が出たときは、伏せ字にしてから AI に渡します。
-- **別の AI の作業**：このセッションが書いていない保存前の変更があるとき、`git reset --hard` などの消すコマンドは、実行する前にあなたに確かめます。答える人がいなければ止めます。`git add -A` も同じ状況では止めます。
+- **別の AI の作業**：このセッションが書いていない保存前の変更があるとき、`git reset --hard` などの消すコマンドは、実行する前にあなたに確かめます。答える人がいなければ止めます。`git add -A`（`.`・`./`・`:/`・`*` と書いた場合も）も同じ状況では止めます。
 - **公開の送り先**：公開と指定した送り先への送信を止めます。
 - **`.env` の表示**：`.env` の中身を画面に出すことを止めます。
 
