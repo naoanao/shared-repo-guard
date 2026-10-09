@@ -66,6 +66,12 @@ The install screen asks for two optional settings:
   - `ui.render` for the one-line notice above the prompt
   - `command.run` for `/guard` and `/preflight`
 
+## How it differs from similar mods
+
+- **blast-radius** (Anthropic sample) holds `rm -rf` and force pushes. This mod targets a different loss: uncommitted work that belongs to someone else.
+- **secret-redactor** and **claude-code-redact** mask secrets in what the model reads. This mod also refuses commands, file writes and tool calls that would carry a secret value out.
+- **Collision Guard** asks before another chat edits a file that was changed recently. This mod covers other agents and tools that never pass through Claude Code. It protects any uncommitted file this session did not write.
+
 ## Limits
 
 - It only sees what passes through Claude Code. Other agents and your own terminal are not covered.
