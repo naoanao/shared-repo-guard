@@ -118,3 +118,8 @@ test('options between git and its command (git -C <dir> ...) do not hide it', as
   expect(destructiveGit('git -C repo stash list')).toBe(null)
   expect(destructiveGit('git -C repo checkout main')).toBe(null)
 })
+
+test('a quoted here-document tag keeps backticks in the body as text', async () => {
+  expect(destructiveGit("cat >> notes.txt <<'EOF'\nuse `git reset --hard` with care\nEOF")).toBe(null)
+  expect(destructiveGit('cat >> notes.txt <<EOF\nuse `git reset --hard` with care\nEOF')).toBeTruthy()
+})

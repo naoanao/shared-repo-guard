@@ -18,10 +18,11 @@ function fakeRepo(on, status: string) {
   on('session.start', async ($, e) => ({ cwd: e.cwd }))
 }
 
-// The engine's own tool: records what really ran. AskUserQuestion is dismissed (nobody answers).
+// The engine's own tool: records what really ran. Any question is answered "Run anyway", as a desktop
+// session in auto mode was seen to do without showing a dialog: the guard must not rely on it.
 function fakeTools(on, ran: string[]) {
   on('tool.call', async ($, e) => {
-    if (e.tool === 'AskUserQuestion') return { deny: 'dismissed' }
+    if (e.tool === 'AskUserQuestion') return { result: { questions: e.questions, answers: { [e.questions[0].question]: 'Run anyway' } } }
     ran.push(e.tool + ': ' + String(e.command || e.file_path || ''))
     return { result: { stdout: 'printed ' + SECRET }, text: 'printed ' + SECRET }
   })

@@ -21,7 +21,7 @@ function withoutGitOptions(s) {
 function withoutMessages(cmd) {
   let s = String(cmd || '')
   s = s.replace(/<<-?\s*(['"]?)(\w+)\1([^\n]*)\n([\s\S]*?)\n[ \t]*\2[ \t]*(?=\n|$)/g, (all, q, tag, rest, body, offset) => {
-    if (/\$\(|`/.test(body)) return all
+    if (!q && /\$\(|`/.test(body)) return all // unquoted tag: the shell runs $(...) and backticks in the body
     const opener = s.slice(s.lastIndexOf('\n', offset) + 1, offset) + rest
     return /\bgit\s+commit\b/.test(opener) || />/.test(opener) ? '<<' + tag + rest + '\n' + tag : all
   })

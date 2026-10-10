@@ -153,14 +153,10 @@ export function register(on, options) {
     const d = destructiveGit(cmd)
     if (d) {
       await refreshForeign($)
+      // Refused without asking: in a desktop session in auto mode, $.ui.ask was seen to return an answer
+      // without showing any dialog (measured 2026-10-10), so a question cannot stand in for the user.
       if (foreign.length) {
-        let answer = 'Stop'
-        try {
-          answer = await $.ui.ask(d + ' would throw away uncommitted work this session did not write (' + foreign.length + ' file(s)):\n' + listFew(foreign) + '\nRun it anyway?', ['Stop', 'Run anyway'])
-        } catch {
-          // nobody to answer: stop
-        }
-        if (answer !== 'Run anyway') return deny($, d + ' was stopped because it would discard work this session did not write. Leave those files alone.')
+        return deny($, d + ' was stopped because it would discard uncommitted work this session did not write (' + foreign.length + ' file(s)). Leave those files alone, or run the command yourself in your own terminal.\n' + listFew(foreign))
       }
     }
     return redact(await next(e), secrets)
