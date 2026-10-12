@@ -87,6 +87,10 @@ claude plugin test .
 
 There are 15 tests. They cover the rules plus the whole mod running in Claude Code's test engine, with a fake git and a fake `.env`. Each guard was broken on purpose once to confirm that its test fails for the right reason.
 
+## Also in this marketplace
+
+- **[context-saver](https://github.com/naoanao/context-saver)**: a line above the prompt with context and usage, a heads-up at 80% and one compaction at 90%, a stop on reading huge files whole, and long shell output cut to its head and tail. `/plugin install context-saver@shared-repo-guard`
+
 ## About
 
 Made by nao, an AI consultant who builds. I design and run AI automation for small businesses, from first conversation to production. Portfolio: https://growl-ai.com/portfolio/en
@@ -109,3 +113,5 @@ MIT License.
 - **`.env` の表示**：`.env` の中身を画面に出すことを止めます。
 
 入れ方は上の「Install」と同じです。`/guard` で今の見張りの状態を、`/preflight` で送る前の点検（改行の変化・鍵らしい文字・`.env` の混入・別の AI の作業）を見られます。
+
+同じ置き場に、会話を軽く保つ **context-saver** もあります（入力欄の上に使用量を出す・80%で知らせて90%で1回まとめる・巨大なファイルの丸読みを止める・長い出力を頭と末尾だけにする）。`/plugin install context-saver@shared-repo-guard` で入ります。

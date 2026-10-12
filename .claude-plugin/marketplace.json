@@ -4,12 +4,16 @@
     "name": "naoanao"
   },
   "metadata": {
-    "description": "Guardrails for repos shared by several AI agents: secret values, public remotes, and other agents' uncommitted work."
+    "description": "Mods for Claude Code: guardrails for repos shared by several AI agents, and context-saver, which keeps sessions light."
   },
   "plugins": [
     {
       "name": "shared-repo-guard",
       "source": "./"
+    },
+    {
+      "name": "context-saver",
+      "source": { "source": "github", "repo": "naoanao/context-saver" }
     }
   ]
 }
